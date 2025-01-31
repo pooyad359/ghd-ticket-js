@@ -1,24 +1,47 @@
-import logo from './logo.svg';
-import './App.css';
 
+import './App.css';
+import FetchData from './pages/TicketsPage';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+const Home = () => {
+  return (
+    <div>
+      <h1>Home</h1>
+    </div>
+  );
+}
+const Blogs = () => {
+  return (
+    <div>
+      <h1>Blogs</h1>
+    </div>
+  );
+}
+const Contact = () => {
+  return (
+    <div>
+      <h1>Contact</h1>
+    </div>
+  );
+}
+const NoPage = () => {
+  return (
+    <div>
+      <h1>404 Page</h1>
+    </div>
+  );
+}
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+          <Route index element={<Home />} />
+          <Route path="blogs" element={<Blogs />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="tickets" element={<FetchData />} />
+          <Route path="*" element={<NoPage />} />
+        
+      </Routes>
+    </BrowserRouter>
   );
 }
 
