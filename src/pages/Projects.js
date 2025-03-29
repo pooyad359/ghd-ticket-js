@@ -1,69 +1,60 @@
-import React, { useState } from 'react';
-import { Card, Input, Col, Row, Empty } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Input, Col, Row, Empty, Spin, message , Tag} from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 const { Meta } = Card;
 
-// Sample data - replace with your actual data source
-const sampleProjects = [
-  {
-    id: 'proj-001',
-    name: 'Website Redesign',
-    client: 'TechCorp Inc',
-    image: 'https://picsum.photos/id/1001/400'
-  },
-  {
-    id: 'proj-002',
-    name: 'Mobile App Development',
-    client: 'StartupX',
-    image: 'https://picsum.photos/id/1002/400'
-  },
-  {
-    id: 'proj-003',
-    name: 'Brand Identity',
-    client: 'Fashion House',
-    image: 'https://picsum.photos/id/1003/400'
-  },
-  {
-    id: 'proj-004',
-    name: 'E-commerce Platform',
-    client: 'Retail Solutions',
-    image: 'https://picsum.photos/id/1004/400'
-  },
-  {
-    id: 'proj-005',
-    name: 'Marketing Campaign',
-    client: 'Global Foods',
-    image: 'https://picsum.photos/id/1005/400'
-  },
-  {
-    id: 'proj-006',
-    name: 'Data Analytics Dashboard',
-    client: 'Tech Analytics',
-    image: 'https://picsum.photos/id/1006/400'
-  }
-];
+const url = "https://8ap1z6w9bb.execute-api.ap-southeast-1.amazonaws.com/prod/projects";
 
-const ProjectCard = ({ project, onClick }) => (
-  <Card
+const ProjectCard = ({ project, onClick }) => {
+  const name = encodeURIComponent(project.name);
+  const url = project.image || `https://api.dicebear.com/9.x/initials/svg?seed=${name}`;
+  return <Card
     hoverable
-    cover={<img alt={project.name} src={project.image} style={{ height: 200, objectFit: 'cover' }} />}
-    onClick={() => onClick(project.id)}
+    cover={<img alt={project.name} src={url} style={{ height: 200, objectFit: 'cover' }} onClick={() => onClick(project.id)}/>}
+    
   >
     <Meta 
       title={project.name}
       description={project.client}
+      extra={project.uid}
     />
+    <Tag color={'gray'} style={{ marginTop: 8 }}>
+      {project.uid}
+    </Tag>
   </Card>
-);
+};
 
 const ProjectsPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setProjects(data.projects);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        message.error("Failed to load projects. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
   // Filter projects based on search query
-  const filteredProjects = sampleProjects.filter(project => {
+  const filteredProjects = projects.filter(project => {
     const searchLower = searchQuery.toLowerCase();
     return (
       project.name.toLowerCase().includes(searchLower) ||
@@ -88,14 +79,18 @@ const ProjectsPage = () => {
         />
       </div>
 
-      {/* Projects Grid */}
-      {filteredProjects.length > 0 ? (
+      {/* Projects Grid with Loading State */}
+      {loading ? (
+        <div style={{ textAlign: 'center', padding: '50px' }}>
+          <Spin size="large" />
+        </div>
+      ) : filteredProjects.length > 0 ? (
         <Row gutter={[16, 16]}>
           {filteredProjects.map(project => (
             <Col 
-              xs={12}  // 2 cards per row on mobile (24/12 = 2)
-              md={8}   // 3 cards per row on tablet (24/8 = 3)
-              xl={4}   // 6 cards per row on desktop (24/4 = 6)
+              xs={12}
+              md={8}
+              xl={4}
               key={project.id}
             >
               <ProjectCard
