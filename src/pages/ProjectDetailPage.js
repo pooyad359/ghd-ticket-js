@@ -1,3 +1,7 @@
+// **************************************************************************
+// This component is not used in the current version of the app.
+// **************************************************************************
+
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import {
@@ -19,6 +23,7 @@ import dayjs from 'dayjs';
 const { Title } = Typography;
 const { Option } = Select;
 
+const url = 'https://8ap1z6w9bb.execute-api.ap-southeast-1.amazonaws.com/prod/projects/'
 const ProjectDetailPage = () => {
   const { projectId } = useParams();
   const [project, setProject] = useState(null);
@@ -29,7 +34,11 @@ const ProjectDetailPage = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const response = await fetch('/sample_project.json');
+        // const response = await fetch('/sample_project.json');
+        const response = await fetch(url + projectId);
+        if (!response.ok) {
+          throw new Error('Invalid response from server');
+        }
         const project = await response.json();
         setProject(project);
         setEditedProject(project); // Initialize edited version
