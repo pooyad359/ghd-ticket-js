@@ -12,8 +12,36 @@ const ProjectCard = ({ project, onClick }) => {
   const url = project.image || `https://api.dicebear.com/9.x/initials/svg?seed=${name}`;
   return <Card
     hoverable
-    cover={<img alt={project.name} src={url} style={{ height: 200, objectFit: 'cover' }} onClick={() => onClick(project.id)}/>}
-    
+    cover={
+      <div style={{ position: 'relative' }}>
+        <img 
+          alt={project.name} 
+          src={url} 
+          style={{ height: "100%", objectFit: 'cover' }} 
+          onClick={() => onClick(project.id)}
+        />
+        <div 
+          style={{ 
+            position: 'absolute', 
+            top: '10px', 
+            left: '10px', 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '50%', 
+            overflow: 'hidden',
+            border: '2px solid white',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+            backgroundColor: '#f0f0f0'
+          }}
+        >
+          <img 
+            src={`https://api.dicebear.com/9.x/initials/svg?seed=${project.client}`} 
+            alt={project.client} 
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          />
+        </div>
+      </div>
+    }
   >
     <Meta 
       title={project.name}
